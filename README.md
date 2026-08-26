@@ -1,77 +1,76 @@
-# Bitey System Bots Trading App
+# Bitey SBT App
 
-Mobile application for **Bitey System Bots Trading**, a specialized module of **Bitey IA / Supracerebro**.
+`bitey-system-bots-trading-app` is the mobile application **Bitey SBT App** for the independent **Bitey System Bots Trading** module of Bitey IA.
+
+## Product role
+
+Bitey SBT App is the mobile channel for the trading module. It is not Bitey IA itself, not JobIA and not Bitey Trainer.
+
+```text
+BITEY IA / SUPRACEREBRO
+          │
+          └── Bitey System Bots Trading
+                    │
+               Bitey SBT App
+```
 
 ## Objective
 
-Provide a mobile interface to monitor and control the trading-system laboratory without placing real-money trades by default.
-
-The app will connect to the Bitey System Bots Trading backend and, through the Bitey IA ecosystem, access authorized data and services from the shared platform infrastructure.
+Provide a mobile interface to monitor and control the trading-system laboratory while keeping real-money execution disabled by default.
 
 ## Planned capabilities
 
-- Demo trading dashboard
-- Paper-trading dashboard
-- Virtual portfolio
-- Bots and strategies
-- Backtest results
-- Performance metrics
-- Risk and drawdown monitoring
-- Trade/event history
-- Strategy experiments
-- Alerts
-- Emergency stop for supported execution modes
-- Bitey IA / Supracerebro status
+- Demo trading dashboard.
+- Paper-trading dashboard.
+- Virtual portfolio.
+- Bots and strategies.
+- Backtest results.
+- Performance metrics.
+- Risk/drawdown monitoring.
+- Trade and event history.
+- Strategy experiments.
+- Alerts.
+- Emergency stop for supported execution modes.
+- Authorized Bitey IA status/integration.
 
 ## Safety
 
-The initial application is **DEMO/PAPER only**. Real-money trading is disabled until the backend, risk engine, audit trail, monitoring, authentication, and operational safeguards have been independently validated.
+Initial operation is **DEMO/PAPER only**. Live trading requires validated backend controls, audit trail, monitoring, authentication, explicit activation and safety gates.
 
-The mobile app must never contain broker credentials, exchange secrets, or privileged risk-control secrets.
+The app must never contain broker credentials, exchange secrets or privileged risk-control secrets.
 
-## Ecosystem
+## Relationship to other modules
 
-```text
-                         BITEY IA
-                      SUPRACEREBRO
-                            │
-             ┌──────────────┴──────────────┐
-             │                             │
-      BITEY TRAINER              SYSTEM BOTS TRADING
-             │                             │
-      AI evaluation                  Trading engine
-      and training                   Strategies
-             │                       Backtesting
-             │                       Demo/Paper
-             └───────────┬───────────────┘
-                         │
-                  Trading App
-```
+- **Bitey IA** — general Supracerebro.
+- **JobIA** — employment/opportunity product.
+- **Bitey Trainer** — internal motor of JobIA; not an app.
+- **Bitey System Bots Trading** — this app's specialized backend/module.
+- **BiteFixes** — separate enterprise product with Bitey IA Empresarial.
 
-Bitey Trainer and Bitey System Bots Trading are separate modules that can exchange authorized results and evaluations through Bitey IA. The app is a client of the trading module, not a replacement for its backend risk and execution controls.
+Trading may exchange authorized results with Bitey IA, but remains independently controlled.
 
 ## Planned stack
 
-- Expo / React Native
-- Expo Router
-- TypeScript
-- Secure client-side session handling
-- Bitey System Bots Trading API
-- Bitey IA / Supracerebro APIs
+- Expo / React Native.
+- Expo Router.
+- TypeScript.
+- Secure session handling.
+- Bitey System Bots Trading API.
+- Authorized Bitey IA APIs.
 
 ## Development stages
 
-1. UI and navigation
-2. Demo portfolio
-3. Backend API integration
-4. Backtesting visualization
-5. Paper trading
-6. Authentication and authorization
-7. Automated Android APK builds
-8. Device testing
-9. Production hardening
-10. Live trading only after explicit safety gates
+1. UI/navigation.
+2. Demo portfolio.
+3. Backend API integration.
+4. Backtesting visualization.
+5. Paper trading.
+6. Authentication/authorization.
+7. Android APK builds.
+8. Physical-device testing.
+9. Production hardening.
+10. Live trading only after explicit safety gates.
 
 ## Disclaimer
 
-Trading financial assets involves risk, including loss of capital. No bot, strategy, or AI system guarantees profits. This application is initially intended for research, simulation, and controlled testing.
+Trading financial assets involves risk, including loss of capital. No bot, strategy or AI system guarantees profits. The application is initially intended for research, simulation and controlled testing.
