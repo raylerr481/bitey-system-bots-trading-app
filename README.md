@@ -1,75 +1,70 @@
 # Bitey SBT App
 
-`bitey-system-bots-trading-app` is the mobile application **Bitey SBT App** for the independent **Bitey System Bots Trading** module of Bitey IA.
+`bitey-system-bots-trading-app` is the mobile application for the independent **Bitey System Bots Trading** module of Bitey IA.
 
-## Product role
+## Current product experience
 
-Bitey SBT App is the mobile channel for the trading module. It is not Bitey IA itself, not JobIA and not Bitey Trainer.
+The app is designed so a person who does not know trading can understand a bot group before activating it:
 
-```text
-BITEY IA / SUPRACEREBRO
-          │
-          └── Bitey System Bots Trading
-                    │
-               Bitey SBT App
-```
+- Choose a bot group: **Conservative, Balanced or Aggressive**.
+- See what the group does in simple language.
+- Enter a capital amount and preview the configured risk.
+- Example: **“If you assign $10, the configured loss limit per trade is about $0.20.”**
+- Switch to **Professional explanation** to see markets, strategies and risk parameters.
+- Demo/paper modes are the normal starting point.
+- The **“Activar dinero real”** control is prepared in the UI but remains disabled until the backend safety milestone is complete.
 
-## Objective
+These examples are illustrative. No profit is guaranteed and configured loss limits cannot guarantee protection against gaps, slippage or exceptional execution conditions.
 
-Provide a mobile interface to monitor and control the trading-system laboratory while keeping real-money execution disabled by default.
+## Real-money activation design
 
-## Planned capabilities
+The future activation flow will require:
 
-- Demo trading dashboard.
-- Paper-trading dashboard.
-- Virtual portfolio.
-- Bots and strategies.
-- Backtest results.
-- Performance metrics.
-- Risk/drawdown monitoring.
-- Trade and event history.
-- Strategy experiments.
-- Alerts.
-- Emergency stop for supported execution modes.
-- Authorized Bitey IA status/integration.
+1. User authentication.
+2. Broker/account connection.
+3. Explicit real-account selection.
+4. Maximum capital allocation.
+5. Per-trade loss limit.
+6. Daily loss limit.
+7. Preflight risk validation.
+8. Audit logging.
+9. Emergency stop.
+10. Explicit final confirmation.
 
-## Safety
+The mobile app must never store broker credentials, exchange secrets or privileged risk-control secrets.
 
-Initial operation is **DEMO/PAPER only**. Live trading requires validated backend controls, audit trail, monitoring, authentication, explicit activation and safety gates.
+## Backend contract
 
-The app must never contain broker credentials, exchange secrets or privileged risk-control secrets.
+The app consumes the Bitey System Bots Trading API, including:
 
-## Relationship to other modules
+- `/api/v1/bot-profiles`
+- `/api/v1/bot-profiles/{profile_id}`
+- `/api/v1/bot-profiles/{profile_id}/risk-preview`
+- `/api/v1/bot-profiles/live/activation-status`
+- `/api/v1/demo/portfolio`
 
-- **Bitey IA** — general Supracerebro.
-- **JobIA** — employment/opportunity product.
-- **Bitey Trainer** — internal motor of JobIA; not an app.
-- **Bitey System Bots Trading** — this app's specialized backend/module.
-- **BiteFixes** — separate enterprise product with Bitey IA Empresarial.
+Configure the backend with `EXPO_PUBLIC_TRADING_API_URL` for a reachable development or production API. The default localhost value is intended for local development only.
 
-Trading may exchange authorized results with Bitey IA, but remains independently controlled.
-
-## Planned stack
+## Development
 
 - Expo / React Native.
 - Expo Router.
 - TypeScript.
-- Secure session handling.
 - Bitey System Bots Trading API.
-- Authorized Bitey IA APIs.
 
-## Development stages
+Start with Expo Go during development; use EAS/custom builds only when required by the target feature set.
 
-1. UI/navigation.
-2. Demo portfolio.
-3. Backend API integration.
-4. Backtesting visualization.
-5. Paper trading.
-6. Authentication/authorization.
-7. Android APK builds.
-8. Physical-device testing.
-9. Production hardening.
-10. Live trading only after explicit safety gates.
+## Relationship
+
+```text
+BITEY IA
+   │
+   └── Bitey System Bots Trading
+             │
+             └── Bitey SBT App
+```
+
+Bitey Trainer/JobIA and BiteFixes are separate products/modules.
 
 ## Disclaimer
 
