@@ -1,49 +1,101 @@
-import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useMemo, useState } from "react";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
-const API_URL = process.env.EXPO_PUBLIC_TRADING_API_URL ?? "http://127.0.0.1:8000";
+const DEFAULT_API = "http://127.0.0.1:8000";
 
-type Profile = {
-  id: string; name: string; short_description: string; beginner_explanation: string; professional_explanation: string;
-  markets: string[]; risk: { level: string; max_loss_pct_per_trade: number; max_daily_loss_pct: number };
+type Analysis = {
+  event?: string;
+  impact?: string;
+  opportunities?: Array<{ asset?: string; direction?: string; score?: number; rationale?: string }>;
+  risk?: { max_loss?: number; reward_target?: number; risk_reward?: number };
+  [key: string]: unknown;
 };
 
-export default function Home() {
-  const [profiles, setProfiles] = useState<Profile[]>([]);
-  const [professional, setProfessional] = useState(false);
-  const [selected, setSelected] = useState("conservative-eurusd");
-  const [loading, setLoading] = useState(true);
+const COPY = {
+  es: { title: "Bitey SBT", subtitle: "Inteligencia de mercados dentro de Bitey IA", analyze: "ANALIZAR MERCADO", capital: "Capital virtual", backend: "Backend SBT", event: "Evento", result: "Resultado", free: "MODO ZERO COST: Demo / Paper / Backtest", note: "No ejecuta dinero real. Una señal no es una garantía de ganancias." },
+  pt: { title: "Bitey SBT", subtitle: "Inteligência de mercados dentro do Bitey IA", analyze: "ANALISAR MERCADO", capital: "Capital virtual", backend: "Backend SBT", event: "Evento", result: "Resultado", free: "MODO ZERO COST: Demo / Paper / Backtest", note: "Não executa dinheiro real. Um sinal não garante lucro." },
+  en: { title: "Bitey SBT", subtitle: "Market intelligence inside Bitey IA", analyze: "ANALYZE MARKET", capital: "Virtual capital", backend: "SBT backend", event: "Event", result: "Result", free: "ZERO COST MODE: Demo / Paper / Backtest", note: "No real money is executed. A signal is not a profit guarantee." },
+} as const;
 
-  useEffect(() => {
-    fetch(`${API_URL}/api/v1/bot-profiles`).then((r) => r.json()).then(setProfiles).catch(() => setProfiles([])).finally(() => setLoading(false));
-  }, []);
-  const profile = profiles.find((item) => item.id === selected);
+export default function Home() {
+  const [language, setLanguage] = useState<keyof typeof COPY>("es");
+  const [capital, setCapital] = useState("1000");
+  const [apiUrl, setApiUrl] = useState(DEFAULT_API);
+  const [event, setEvent] = useState("energy_supply_risk");
+  const [loading, setLoading] = useState(false);
+  const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  const t = COPY[language];
+
+  const demoEvidence = useMemo(() => [
+    { source: "demo-news-1", source_type: "news", title: "Energy supply disruption risk", reliability: 0.85, impact: 0.9, direction: "long" },
+    { source: "demo-news-2", source_type: "official", title: "Energy market risk confirmation", reliability: 0.9, impact: 0.85, direction: "long" },
+    { source: "demo-market", source_type: "market", title: "Price confirmation", reliability: 0.8, impact: 0.8, direction: "long" },
+  ], []);
+
+  async function analyze() {
+    setLoading(true);
+    setAnalysis(null);
+    try {
+      const response = await fetch(`${apiUrl.replace(/\/$/, "")}/api/v1/sbt/market-intelligence/analyze`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ capital: Number(capital) || 1000, language, event, evidence: demoEvidence }),
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      setAnalysis(await response.json());
+    } catch (error) {
+      setAnalysis({ error: String(error), status: "Backend not reachable. Check the LAN URL and keep SBT in demo mode." });
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return <ScrollView contentContainerStyle={styles.container}>
-    <Text style={styles.eyebrow}>BITEY SBT</Text>
-    <Text style={styles.title}>Elige tu grupo de bots</Text>
-    <Text style={styles.subtitle}>Primero una explicación sencilla. Activa la vista profesional cuando quieras conocer los parámetros técnicos.</Text>
-    {loading ? <ActivityIndicator /> : profiles.map((item) => <Pressable key={item.id} onPress={() => setSelected(item.id)} style={[styles.card, selected === item.id && styles.selected]}>
-      <View style={styles.row}><Text style={styles.cardTitle}>{item.name}</Text><Text style={styles.risk}>{item.risk.level.toUpperCase()}</Text></View>
-      <Text>{item.short_description}</Text>
-      <Text style={styles.explanation}>{professional ? item.professional_explanation : item.beginner_explanation}</Text>
-      <Text style={styles.meta}>Mercado: {item.markets.join(", ")}</Text>
-      <Text style={styles.meta}>Pérdida configurada por operación: {(item.risk.max_loss_pct_per_trade * 100).toFixed(1)}%</Text>
-    </Pressable>)}
-    <Pressable onPress={() => setProfessional((v) => !v)} style={styles.secondary}><Text style={styles.secondaryText}>{professional ? "Ver explicación sencilla" : "Ver explicación profesional"}</Text></Pressable>
-    {profile && <View style={styles.preview}><Text style={styles.previewTitle}>Si asignas $10</Text><Text>El límite configurado de pérdida por operación es aproximadamente ${(10 * profile.risk.max_loss_pct_per_trade).toFixed(2)}.</Text><Text style={styles.warning}>Es un control de riesgo, no una garantía. Slippage, gaps y condiciones de mercado pueden producir pérdidas mayores.</Text></View>}
-    <Pressable disabled style={styles.live}><Text style={styles.liveText}>Activar dinero real — próximamente</Text></Pressable>
-    <Text style={styles.safety}>El modo real permanece bloqueado. Su futura activación exigirá autenticación, conexión al broker/MT5, capital máximo, límites de pérdida, validación previa, auditoría, parada de emergencia y confirmación explícita.</Text>
+    <View style={styles.header}>
+      <Text style={styles.eyebrow}>BITEY IA · SBT</Text>
+      <Text style={styles.title}>{t.title}</Text>
+      <Text style={styles.subtitle}>{t.subtitle}</Text>
+    </View>
+
+    <View style={styles.badge}><Text style={styles.badgeText}>● {t.free}</Text></View>
+
+    <View style={styles.card}>
+      <Text style={styles.section}>{t.backend}</Text>
+      <TextInput value={apiUrl} onChangeText={setApiUrl} autoCapitalize="none" style={styles.input} placeholder="http://192.168.1.x:8000" />
+      <Text style={styles.hint}>En el teléfono, 127.0.0.1 apunta al propio teléfono. Usa la IP LAN del PC donde corre SBT.</Text>
+    </View>
+
+    <View style={styles.card}>
+      <Text style={styles.section}>{t.capital}</Text>
+      <TextInput value={capital} onChangeText={setCapital} keyboardType="decimal-pad" style={styles.input} />
+      <Text style={styles.section}>{t.event}</Text>
+      <TextInput value={event} onChangeText={setEvent} style={styles.input} />
+      <View style={styles.languages}>
+        {(Object.keys(COPY) as Array<keyof typeof COPY>).map((code) => <Pressable key={code} onPress={() => setLanguage(code)} style={[styles.lang, language === code && styles.langActive]}><Text style={styles.langText}>{code.toUpperCase()}</Text></Pressable>)}
+      </View>
+      <Pressable onPress={analyze} disabled={loading} style={styles.primary}><Text style={styles.primaryText}>{loading ? "..." : t.analyze}</Text></Pressable>
+    </View>
+
+    {loading && <ActivityIndicator size="large" />}
+    {analysis && <View style={styles.result}>
+      <Text style={styles.resultTitle}>{t.result}</Text>
+      <Text style={styles.json}>{JSON.stringify(analysis, null, 2)}</Text>
+    </View>}
+
+    <View style={styles.card}>
+      <Text style={styles.section}>Pipeline</Text>
+      <Text style={styles.pipeline}>NEWS → SOURCES → DOMINO → MARKET CONFIRMATION → OPPORTUNITY → RISK → DEMO</Text>
+      <Text style={styles.warning}>{t.note}</Text>
+    </View>
   </ScrollView>;
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 24, paddingTop: 56, gap: 14 }, eyebrow: { fontSize: 12, fontWeight: "800", letterSpacing: 2 },
-  title: { fontSize: 30, fontWeight: "800" }, subtitle: { fontSize: 16, lineHeight: 23, opacity: 0.7 },
-  card: { padding: 18, borderRadius: 18, borderWidth: 1, borderColor: "#ddd", gap: 8 }, selected: { borderWidth: 2 },
-  row: { flexDirection: "row", justifyContent: "space-between", gap: 8 }, cardTitle: { fontSize: 19, fontWeight: "800", flex: 1 }, risk: { fontSize: 11, fontWeight: "800" },
-  explanation: { fontSize: 14, lineHeight: 20, opacity: 0.8 }, meta: { fontSize: 12, opacity: 0.65 },
-  secondary: { padding: 15, borderRadius: 14, borderWidth: 1, alignItems: "center" }, secondaryText: { fontWeight: "700" },
-  preview: { padding: 18, borderRadius: 18, backgroundColor: "#f2f2f2", gap: 7 }, previewTitle: { fontSize: 18, fontWeight: "800" }, warning: { fontSize: 12, lineHeight: 18, opacity: 0.7 },
-  live: { padding: 17, borderRadius: 14, alignItems: "center", opacity: 0.45 }, liveText: { fontWeight: "800" }, safety: { fontSize: 12, lineHeight: 18, opacity: 0.6, textAlign: "center" },
+  container: { padding: 20, paddingTop: 56, gap: 14 }, header: { gap: 5 }, eyebrow: { fontSize: 11, fontWeight: "800", letterSpacing: 2, opacity: 0.6 },
+  title: { fontSize: 34, fontWeight: "900" }, subtitle: { fontSize: 16, lineHeight: 22, opacity: 0.65 },
+  badge: { borderWidth: 1, borderRadius: 20, padding: 11, alignSelf: "flex-start" }, badgeText: { fontSize: 11, fontWeight: "800" },
+  card: { padding: 18, borderRadius: 20, borderWidth: 1, borderColor: "#ddd", gap: 10 }, section: { fontSize: 16, fontWeight: "800" }, input: { borderWidth: 1, borderColor: "#ccc", borderRadius: 12, padding: 13, fontSize: 15 }, hint: { fontSize: 11, lineHeight: 16, opacity: 0.6 },
+  languages: { flexDirection: "row", gap: 8 }, lang: { borderWidth: 1, borderRadius: 10, paddingVertical: 9, paddingHorizontal: 14 }, langActive: { borderWidth: 2 }, langText: { fontWeight: "800", fontSize: 12 },
+  primary: { marginTop: 4, padding: 16, borderRadius: 14, alignItems: "center", backgroundColor: "#111" }, primaryText: { color: "#fff", fontWeight: "900" },
+  result: { padding: 18, borderRadius: 20, borderWidth: 1, gap: 10 }, resultTitle: { fontSize: 19, fontWeight: "900" }, json: { fontFamily: "monospace", fontSize: 11, lineHeight: 16 }, pipeline: { fontSize: 12, lineHeight: 20 }, warning: { fontSize: 12, lineHeight: 18, opacity: 0.65 },
 });
