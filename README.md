@@ -12,9 +12,20 @@ The app is designed so a person who does not know trading can understand a bot g
 - Example: **“If you assign $10, the configured loss limit per trade is about $0.20.”**
 - Switch to **Professional explanation** to see markets, strategies and risk parameters.
 - Demo/paper modes are the normal starting point.
+- The app can present market-intelligence results: affected assets, expected domino horizons, directional bias, opportunity status and risk context.
 - The **“Activar dinero real”** control is prepared in the UI but remains disabled until the backend safety milestone is complete.
 
 These examples are illustrative. No profit is guaranteed and configured loss limits cannot guarantee protection against gaps, slippage or exceptional execution conditions.
+
+## Market intelligence
+
+Market intelligence is provided by the SBT backend. The intended user-facing flow is:
+
+**News → Event → Affected asset → Domino effects → Time horizon → Market confirmation → Opportunity → Risk → Demo/Paper**
+
+The system distinguishes a hypothesis from an executable trade. News can be already priced in, delayed, unreliable or contradicted by price action. The app should therefore expose `watch`, `wait` and risk states rather than presenting every news event as a buy/sell instruction.
+
+The initial backend intelligence component is analysis-only and cannot place orders. Strategy confirmation and the backend Risk Engine remain mandatory.
 
 ## Real-money activation design
 
@@ -42,6 +53,8 @@ The app consumes the Bitey System Bots Trading API, including:
 - `/api/v1/bot-profiles/{profile_id}/risk-preview`
 - `/api/v1/bot-profiles/live/activation-status`
 - `/api/v1/demo/portfolio`
+- `/api/v1/intelligence/news/analyze`
+- `/api/v1/intelligence/health`
 
 Configure the backend with `EXPO_PUBLIC_TRADING_API_URL` for a reachable development or production API. The default localhost value is intended for local development only.
 
@@ -61,7 +74,12 @@ BITEY IA
    │
    └── Bitey System Bots Trading
              │
-             └── Bitey SBT App
+       ┌─────┴─────────┐
+       │               │
+    Backend         Bitey SBT App
+       │
+ Market Intelligence
+ Strategy + Risk
 ```
 
 Bitey Trainer/JobIA and BiteFixes are separate products/modules.
