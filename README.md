@@ -1,39 +1,110 @@
 # Bitey SBT App
 
-`bitey-system-bots-trading-app` is the mobile application for the independent **Bitey System Bots Trading** module of Bitey IA.
+`bitey-system-bots-trading-app` is the independent mobile channel for **Bitey System Bots Trading (Bitey SBT)**, the specialized trading product of Bitey IA.
 
-## Current product experience
+The app has its own mobile UX and identity while consuming the same controlled SBT APIs as the future independent web platform. It is **not a clone of another trading application**.
 
-The app is designed so a person who does not know trading can understand a bot group before activating it:
+## Product philosophy
 
-- Choose a bot group: **Conservative, Balanced or Aggressive**.
-- See what the group does in simple language.
-- Enter a capital amount and preview the configured risk.
-- Example: **“If you assign $10, the configured loss limit per trade is about $0.20.”**
-- Switch to **Professional explanation** to see markets, strategies and risk parameters.
-- Demo/paper modes are the normal starting point.
-- The app can present market-intelligence results: affected assets, expected domino horizons, directional bias, opportunity status and risk context.
-- The **“Activar dinero real”** control is prepared in the UI but remains disabled until the backend safety milestone is complete.
+Bitey SBT uses proven, non-exclusive trading-product dynamics—research, strategy creation, simulation, comparison, validation, demo, paper trading, publication and monitoring—while implementing its own:
 
-These examples are illustrative. No profit is guaranteed and configured loss limits cannot guarantee protection against gaps, slippage or exceptional execution conditions.
+- navigation;
+- visual language;
+- terminology;
+- screens and components;
+- workflows;
+- data contracts;
+- evaluation model;
+- safety model.
+
+No competitor code, artwork, copywriting, screenshots or proprietary implementation may be used in this app.
+
+## User experience
+
+The app should let beginners and experienced traders understand what a strategy does before activation.
+
+Core experiences:
+
+- Explore strategy profiles.
+- Understand strategy logic in simple language.
+- Switch to technical/professional detail.
+- Enter capital and preview configured risk.
+- Review backtest and validation evidence.
+- Follow demo/paper performance.
+- Inspect strategy versions.
+- Monitor active strategies.
+- Stop/suspend an eligible strategy.
+
+The initial strategy groups remain **Conservador, Equilibrado and Agresivo EUR/USD**. They are seeds for the versioned SBT Strategy Registry, not fixed promises of performance.
+
+## Bitey Model Workshop
+
+Where supported by backend integrations, the user may choose Bitey Trading Intelligence or an external model such as ChatGPT or Claude for research and strategy proposals.
+
+The app must make the distinction explicit:
+
+**AI proposes → SBT evaluates → Risk Engine controls → execution layer acts only when authorized.**
+
+The mobile client never receives provider secrets and never becomes the authority for trading permissions.
+
+## SBT Evaluation
+
+The app can present the backend's versioned evaluation evidence, which may include:
+
+- net return;
+- maximum drawdown;
+- profit factor;
+- risk-adjusted metrics;
+- trade count;
+- exposure;
+- stability;
+- out-of-sample behavior;
+- demo/paper consistency;
+- validation freshness.
+
+A headline return must never be presented as proof of future profit.
+
+## Strategy lifecycle
+
+```text
+IDEA
+ ↓
+SIMULATION
+ ↓
+ROBUSTNESS
+ ↓
+VALIDATION
+ ↓
+DEMO
+ ↓
+PAPER
+ ↓
+PUBLISH
+ ↓
+MONITOR
+ ↓
+REVALIDATE / SUSPEND
+```
+
+The app should always distinguish historical simulation from observed/demo/paper results.
 
 ## Market intelligence
 
-Market intelligence is provided by the SBT backend. The intended user-facing flow is:
+The SBT intelligence flow is:
 
-**News → Event → Affected asset → Domino effects → Time horizon → Market confirmation → Opportunity → Risk → Demo/Paper**
+**Event → Asset → Possible effects → Time horizon → Technical context → Hypothesis → Simulation → Validation → Risk**
 
-The system distinguishes a hypothesis from an executable trade. News can be already priced in, delayed, unreliable or contradicted by price action. The app should therefore expose `watch`, `wait` and risk states rather than presenting every news event as a buy/sell instruction.
+News and AI analysis are hypotheses and context, not automatic buy/sell instructions.
 
-The initial backend intelligence component is analysis-only and cannot place orders. Strategy confirmation and the backend Risk Engine remain mandatory.
+## Real-money activation
 
-## Real-money activation design
+The **“Activar dinero real”** experience remains gated until the backend safety milestone is complete.
 
-The future activation flow will require:
+Future activation requires at minimum:
 
-1. User authentication.
-2. Broker/account connection.
-3. Explicit real-account selection.
+1. Authentication.
+2. Explicit real-account selection.
+3. Broker/exchange connection.
 4. Maximum capital allocation.
 5. Per-trade loss limit.
 6. Daily loss limit.
@@ -41,12 +112,14 @@ The future activation flow will require:
 8. Audit logging.
 9. Emergency stop.
 10. Explicit final confirmation.
+11. Validated strategy status.
+12. Execution and broker health checks.
 
-The mobile app must never store broker credentials, exchange secrets or privileged risk-control secrets.
+The mobile app must never store broker credentials or privileged risk-control secrets.
 
 ## Backend contract
 
-The app consumes the Bitey System Bots Trading API, including:
+Current SBT endpoints include:
 
 - `/api/v1/bot-profiles`
 - `/api/v1/bot-profiles/{profile_id}`
@@ -56,34 +129,33 @@ The app consumes the Bitey System Bots Trading API, including:
 - `/api/v1/intelligence/news/analyze`
 - `/api/v1/intelligence/health`
 
-Configure the backend with `EXPO_PUBLIC_TRADING_API_URL` for a reachable development or production API. The default localhost value is intended for local development only.
+Configure `EXPO_PUBLIC_TRADING_API_URL` for a reachable SBT API. Localhost is for development only.
 
 ## Development
 
 - Expo / React Native.
 - Expo Router.
 - TypeScript.
-- Bitey System Bots Trading API.
+- Bitey SBT API.
 
-Start with Expo Go during development; use EAS/custom builds only when required by the target feature set.
-
-## Relationship
+## Relationship to the ecosystem
 
 ```text
-BITEY IA
-   │
-   └── Bitey System Bots Trading
-             │
-       ┌─────┴─────────┐
-       │               │
-    Backend         Bitey SBT App
-       │
- Market Intelligence
- Strategy + Risk
+                         BITEY IA
+                            │
+                  authorized SBT intelligence
+                            │
+                            ▼
+                     BITEY SBT CORE
+                       /         \
+                      /           \
+              SBT Web           SBT App
+                 │                   │
+                 └──── same API ────┘
 ```
 
-Bitey Trainer/JobIA and BiteFixes are separate products/modules.
+The app is independent in frontend experience but interconnected internally with Bitey IA and the specialized SBT backend.
 
 ## Disclaimer
 
-Trading financial assets involves risk, including loss of capital. No bot, strategy or AI system guarantees profits. The application is initially intended for research, simulation and controlled testing.
+Trading financial assets involves risk, including loss of capital. No strategy, bot or AI system guarantees profits. The application is initially intended for research, simulation and controlled testing.
